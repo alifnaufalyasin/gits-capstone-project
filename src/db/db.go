@@ -17,7 +17,7 @@ func Init(e *echo.Echo, tableDelete, dataInitialization bool) {
 
 	e.Logger.Info("menginisialisasikan database")
 
-	config := config.GetConfig()
+	config := config.GetConfig(e)
 	e.Logger.Info(config)
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",

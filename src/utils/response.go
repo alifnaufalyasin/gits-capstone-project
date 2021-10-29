@@ -26,9 +26,17 @@ type JSONResponseDataRT struct {
 type JSONResponseDataPengurusRT struct {
 	Code              int64       `json:"code"`
 	GetPengurusRTByID interface{} `json:"get_pengurus_rt_by_id,omitempty"`
-	GetPengurusAllRT  interface{} `json:"get_all_pengurus_rt,omitempty"`
+	GetAllPengurusRT  interface{} `json:"get_all_pengurus_rt,omitempty"`
 	CreatePengurusRT  interface{} `json:"create_pengurus_rt,omitempty"`
 	Message           string      `json:"message"`
+}
+
+type JSONResponseDataWarga struct {
+	Code         int64       `json:"code"`
+	GetWargaByID interface{} `json:"get_pengurus_rt_by_id,omitempty"`
+	GetAllWarga  interface{} `json:"get_all_pengurus_rt,omitempty"`
+	CreateWarga  interface{} `json:"create_pengurus_rt,omitempty"`
+	Message      string      `json:"message"`
 }
 
 type JSONResponse struct {
@@ -49,6 +57,10 @@ func ResponseDataRT(c echo.Context, res JSONResponseDataRT) error {
 }
 
 func ResponseDataPengurusRT(c echo.Context, res JSONResponseDataPengurusRT) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataWarga(c echo.Context, res JSONResponseDataWarga) error {
 	return c.JSON(int(res.Code), res)
 }
 

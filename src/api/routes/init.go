@@ -5,13 +5,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/rs/zerolog/log"
 )
 
 func Init(e *echo.Echo) *echo.Echo {
 	middleware.ErrJWTMissing.Code = 401
 	middleware.ErrJWTMissing.Message = "Unauthorized"
-	log.Info().Msg("menginisialisasikan routes")
+	e.Logger.Info("menginisialisasikan routes")
 	e = Keluarga(e)
 	e = RT(e)
 
@@ -19,7 +18,7 @@ func Init(e *echo.Echo) *echo.Echo {
 		return c.String(http.StatusOK, "Hello Worlds!!!")
 	})
 
-	log.Info().Msg("routes terinisialisasi")
+	e.Logger.Info("routes terinisialisasi")
 
 	return e
 }
