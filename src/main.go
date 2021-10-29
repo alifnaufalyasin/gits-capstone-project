@@ -7,9 +7,9 @@ import (
 	"src/api"
 	"src/config"
 	"src/db"
-	"src/utils/errlogger"
 
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -17,15 +17,17 @@ import (
 func main() {
 	// Inisialisasi Logger
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
-
+	e := echo.New()
 	// Inisialisasi Env
 	err := godotenv.Load()
-	errlogger.ErrFatalPanic(err)
+	if err != nil {
+		log.Error().Msgf("%v", err)
+	}
 
 	// Inisialisasi DB
-	db.Init(true, true)
+	db.Init(e, true, true)
 	// Inisialisasi Server
-	e := api.Init()
+	e = api.Init(e)
 
 	// Server Listener
 	port := config.GetConfig().Port

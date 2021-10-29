@@ -2,7 +2,8 @@ package config
 
 import (
 	"os"
-	"src/utils/errlogger"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/joho/godotenv"
 )
@@ -24,7 +25,7 @@ type DatabaseConfig struct {
 
 func GetConfig() Config {
 	err := godotenv.Load()
-	errlogger.ErrFatalPanic(err)
+	log.Error().Msgf("%v", err)
 	return Config{
 		Database: DatabaseConfig{
 			Host:     os.Getenv("DB_HOST"),

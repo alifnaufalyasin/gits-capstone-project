@@ -37,7 +37,7 @@ func CreateKeluarga(c echo.Context) error {
 	k.CreatedAt = time.Now()
 
 	// Ini fungsi dari models buat create data ke database
-	keluarga, err := models.CreateKeluarga(k)
+	keluarga, err := models.CreateKeluarga(c, k)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -56,7 +56,7 @@ func CreateKeluarga(c echo.Context) error {
 func GetAllKeluarga(c echo.Context) error {
 	Search := c.QueryParam("search")
 
-	allKeluarga, err := models.GetAllKeluarga(Search)
+	allKeluarga, err := models.GetAllKeluarga(c, Search)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -80,7 +80,7 @@ func GetKeluargaByID(c echo.Context) error {
 		})
 	}
 
-	k, err := models.GetKeluargaByID(id)
+	k, err := models.GetKeluargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -112,7 +112,7 @@ func UpdateKeluargaById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetKeluargaByID(id)
+	_, err := models.GetKeluargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -121,7 +121,7 @@ func UpdateKeluargaById(c echo.Context) error {
 	}
 
 	k.UpdatedAt = time.Now()
-	_, err = models.UpdateKeluargaById(id, k)
+	_, err = models.UpdateKeluargaById(c, id, k)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -143,7 +143,7 @@ func SoftDeleteKeluargaById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetKeluargaByID(id)
+	_, err := models.GetKeluargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -151,7 +151,7 @@ func SoftDeleteKeluargaById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeleteKeluargaById(id)
+	_, err = models.SoftDeleteKeluargaById(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

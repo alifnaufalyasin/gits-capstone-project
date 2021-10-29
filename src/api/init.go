@@ -7,10 +7,9 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func Init() *echo.Echo {
+func Init(e *echo.Echo) *echo.Echo {
 	log.Info().Msg("menginisialisasikan server")
 
-	e := echo.New()
 	e = routes.Init(e)
 
 	log.Info().Msg("server terinisialisasi")
