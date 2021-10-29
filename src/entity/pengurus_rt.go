@@ -37,5 +37,11 @@ func (prt PengurusRT) ValidateCreate() utils.Error {
 			Message: "Email tidak valid",
 		}
 	}
+	if prt.Password == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password tidak boleh kosong",
+		}
+	}
 	return utils.Error{}
 }

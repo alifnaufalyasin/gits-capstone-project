@@ -13,6 +13,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	e.Logger.Info("menginisialisasikan routes")
 	e = Keluarga(e)
 	e = RT(e)
+	e = PengurusRT(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello Worlds!!!")
