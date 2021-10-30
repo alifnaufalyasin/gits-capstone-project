@@ -35,7 +35,7 @@ func Init(e *echo.Echo, tableDelete, dataInitialization bool) {
 	}
 
 	if tableDelete {
-
+		migrations.DeleteAllTable(e, db)
 	}
 
 	migrations.Migration(e, db)
@@ -69,7 +69,11 @@ func initData(e *echo.Echo, db *gorm.DB) {
 	_ = SeedPengurusRT(db, listIdRt)
 
 	// Keluarga
-	_ = SeedKeluarga(db, listIdRt)
+	listIdKeluarga := SeedKeluarga(db, listIdRt)
+
+	//Warga
+
+	_ = SeedWarga(db, listIdKeluarga)
 
 	e.Logger.Info("dummy data terinisialisasi")
 }

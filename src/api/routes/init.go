@@ -14,6 +14,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	e = Keluarga(e)
 	e = RT(e)
 	e = PengurusRT(e)
+	e = Warga(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello Worlds!!!")

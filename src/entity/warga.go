@@ -37,5 +37,11 @@ func (w Warga) ValidateCreate() utils.Error {
 			Message: "Email tidak valid",
 		}
 	}
+	if w.Password == "" {
+		return utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Password tidak boleh kosong",
+		}
+	}
 	return utils.Error{}
 }
