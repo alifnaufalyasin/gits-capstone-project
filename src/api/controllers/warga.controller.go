@@ -30,7 +30,7 @@ func CreateWarga(c echo.Context) error {
 	}
 
 	_, err := models.GetWargaByEmail(c, w.Email)
-	if err != nil {
+	if err.Error() != "email tidak ditemukan" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),

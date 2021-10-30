@@ -46,10 +46,10 @@ func CreateKeluarga(c echo.Context) error {
 	}
 
 	// Return datanya
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusCreated,
-		Data:    keluarga,
-		Message: "Berhasil",
+	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
+		Code:           http.StatusCreated,
+		CreateKeluarga: keluarga,
+		Message:        "Berhasil",
 	})
 }
 
@@ -64,10 +64,10 @@ func GetAllKeluarga(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusOK,
-		Data:    allKeluarga,
-		Message: "Berhasil",
+	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
+		Code:           http.StatusOK,
+		GetAllKeluarga: allKeluarga,
+		Message:        "Berhasil",
 	})
 }
 
@@ -87,10 +87,10 @@ func GetKeluargaByID(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusOK,
-		Data:    k,
-		Message: "Berhasil",
+	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
+		Code:            http.StatusOK,
+		GetKeluargaByID: k,
+		Message:         "Berhasil",
 	})
 }
 

@@ -23,19 +23,27 @@ type JSONResponseDataRT struct {
 	Message   string      `json:"message"`
 }
 
+type JSONResponseDataKeluarga struct {
+	Code            int64       `json:"code"`
+	GetKeluargaByID interface{} `json:"get_keluarga_by_id,omitempty"`
+	GetAllKeluarga  interface{} `json:"get_all_keluarga,omitempty"`
+	CreateKeluarga  interface{} `json:"create_keluarga,omitempty"`
+	Message         string      `json:"message"`
+}
+
 type JSONResponseDataPengurusRT struct {
-	Code              int64       `json:"code"`
-	GetPengurusRTByID interface{} `json:"get_pengurus_rt_by_id,omitempty"`
-	GetAllPengurusRT  interface{} `json:"get_all_pengurus_rt,omitempty"`
-	CreatePengurusRT  interface{} `json:"create_pengurus_rt,omitempty"`
-	Message           string      `json:"message"`
+	Code            int64       `json:"code"`
+	GetPengurusByID interface{} `json:"get_pengurus_by_id,omitempty"`
+	GetAllPengurus  interface{} `json:"get_all_pengurus,omitempty"`
+	CreatePengurus  interface{} `json:"create_pengurus,omitempty"`
+	Message         string      `json:"message"`
 }
 
 type JSONResponseDataWarga struct {
 	Code         int64       `json:"code"`
-	GetWargaByID interface{} `json:"get_pengurus_rt_by_id,omitempty"`
-	GetAllWarga  interface{} `json:"get_all_pengurus_rt,omitempty"`
-	CreateWarga  interface{} `json:"create_pengurus_rt,omitempty"`
+	GetWargaByID interface{} `json:"get_warga_by_id,omitempty"`
+	GetAllWarga  interface{} `json:"get_all_warga,omitempty"`
+	CreateWarga  interface{} `json:"create_warga,omitempty"`
 	Message      string      `json:"message"`
 }
 
@@ -53,6 +61,10 @@ func ResponseData(c echo.Context, res JSONResponseData) error {
 }
 
 func ResponseDataRT(c echo.Context, res JSONResponseDataRT) error {
+	return c.JSON(int(res.Code), res)
+}
+
+func ResponseDataKeluarga(c echo.Context, res JSONResponseDataKeluarga) error {
 	return c.JSON(int(res.Code), res)
 }
 

@@ -28,6 +28,7 @@ func Init(e *echo.Echo, tableDelete, dataInitialization bool) {
 		config.Database.Name)
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
+		// DisableForeignKeyConstraintWhenMigrating: true,
 	})
 	if err != nil {
 		e.Logger.Error(err)

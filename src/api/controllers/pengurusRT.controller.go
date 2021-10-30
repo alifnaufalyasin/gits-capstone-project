@@ -40,9 +40,9 @@ func CreatePengurus(c echo.Context) error {
 	}
 
 	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
-		Code:             http.StatusCreated,
-		CreatePengurusRT: PengurusRT,
-		Message:          "Berhasil",
+		Code:           http.StatusCreated,
+		CreatePengurus: PengurusRT,
+		Message:        "Berhasil",
 	})
 }
 
@@ -56,9 +56,9 @@ func GetAllPengurusRT(c echo.Context) error {
 	}
 
 	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
-		Code:             http.StatusOK,
-		GetAllPengurusRT: allPengurusRT,
-		Message:          "Berhasil",
+		Code:           http.StatusOK,
+		GetAllPengurus: allPengurusRT,
+		Message:        "Berhasil",
 	})
 }
 
@@ -79,9 +79,9 @@ func GetPengurusByID(c echo.Context) error {
 		})
 	}
 	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
-		Code:              http.StatusOK,
-		GetPengurusRTByID: prt,
-		Message:           "Berhasil",
+		Code:            http.StatusOK,
+		GetPengurusByID: prt,
+		Message:         "Berhasil",
 	})
 }
 
