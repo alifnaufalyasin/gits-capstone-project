@@ -32,6 +32,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	e = Warga(e, JWTconfig)
 	e = Produk(e)
 
+
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello Worlds!!!")
 	})
