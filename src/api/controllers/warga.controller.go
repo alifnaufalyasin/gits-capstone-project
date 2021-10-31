@@ -12,26 +12,40 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-func CreatePengurus(c echo.Context) error {
-	prt := new(entity.PengurusRT)
+func CreateWarga(c echo.Context) error {
+	// Pertama inisiasi variable dulu
+	w := new(entity.Warga)
 
-	if err := c.Bind(prt); err != nil {
+	// kemudian ini buat dapetin request body dari mobile
+	if err := c.Bind(w); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	if err := prt.ValidateCreate(); err.Code > 0 {
+	// terus ini ada validasi buat ngecek inputan dari reqeust body udah sesuai apa belum
+	if err := w.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
 
+	_, err := models.GetWargaByEmail(c, w.Email)
+	if err.Error() != "email tidak ditemukan" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	//Ini buat generate ID
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	prt.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	w.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
-	prt.CreatedAt = time.Now()
+	// Ini buat masukin isi dari created_at nya
+	w.CreatedAt = time.Now()
 
-	PengurusRT, err := models.CreatePengurusRT(c, prt)
+	// Ini fungsi dari models buat create data ke database
+	W, err := models.CreateWarga(c, w)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -39,15 +53,16 @@ func CreatePengurus(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
-		Code:           http.StatusCreated,
-		CreatePengurus: PengurusRT,
-		Message:        "Berhasil",
+	// Return datanya
+	return utils.ResponseDataWarga(c, utils.JSONResponseDataWarga{
+		Code:        http.StatusCreated,
+		CreateWarga: W,
+		Message:     "Berhasil",
 	})
 }
 
-func GetAllPengurusRT(c echo.Context) error {
-	allPengurusRT, err := models.GetAllPengurusRT(c)
+func GetAllWarga(c echo.Context) error {
+	allWarga, err := models.GetAllWarga(c, c.QueryParam("id_keluarga"))
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -55,14 +70,14 @@ func GetAllPengurusRT(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
-		Code:           http.StatusOK,
-		GetAllPengurus: allPengurusRT,
-		Message:        "Berhasil",
+	return utils.ResponseDataWarga(c, utils.JSONResponseDataWarga{
+		Code:        http.StatusOK,
+		GetAllWarga: allWarga,
+		Message:     "Berhasil",
 	})
 }
 
-func GetPengurusByID(c echo.Context) error {
+func GetWargaByID(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -71,21 +86,21 @@ func GetPengurusByID(c echo.Context) error {
 		})
 	}
 
-	prt, err := models.GetPengurusByID(c, id)
+	w, err := models.GetWargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataPengurusRT(c, utils.JSONResponseDataPengurusRT{
-		Code:            http.StatusOK,
-		GetPengurusByID: prt,
-		Message:         "Berhasil",
+	return utils.ResponseDataWarga(c, utils.JSONResponseDataWarga{
+		Code:         http.StatusOK,
+		GetWargaByID: w,
+		Message:      "Berhasil",
 	})
 }
 
-func UpdatePengurusById(c echo.Context) error {
+func UpdateWargaById(c echo.Context) error {
 	id := c.Param("id")
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -94,16 +109,16 @@ func UpdatePengurusById(c echo.Context) error {
 		})
 	}
 
-	prt := new(entity.PengurusRT)
+	w := new(entity.Warga)
 
-	if err := c.Bind(prt); err != nil {
+	if err := c.Bind(w); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	_, err := models.GetPengurusByID(c, id)
+	_, err := models.GetWargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -111,9 +126,9 @@ func UpdatePengurusById(c echo.Context) error {
 		})
 	}
 
-	prt.UpdatedAt = time.Now()
+	w.UpdatedAt = time.Now()
 
-	_, err = models.UpdatePengurusById(c, id, prt)
+	_, err = models.UpdateWargaById(c, id, w)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -126,18 +141,16 @@ func UpdatePengurusById(c echo.Context) error {
 	})
 }
 
-func SoftDeletePengurusById(c echo.Context) error {
+func SoftDeleteWargaById(c echo.Context) error {
 	id := c.Param("id")
-
 	if id == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Id todak valid",
+			Message: "Id tidak valid",
 		})
 	}
 
-	_, err := models.GetPengurusByID(c, id)
-
+	_, err := models.GetWargaByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -145,8 +158,7 @@ func SoftDeletePengurusById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeletePengurusById(c, id)
-
+	_, err = models.SoftDeleteWargaById(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -159,18 +171,17 @@ func SoftDeletePengurusById(c echo.Context) error {
 	})
 }
 
-func LoginPengurus(c echo.Context) error {
-	prt := new(entity.PengurusRT)
+func LoginWarga(c echo.Context) error {
+	w := new(entity.Warga)
 
-	if err := c.Bind(prt); err != nil {
+	if err := c.Bind(w); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
-	pengurus, err := models.PengurusSearchEmail(prt.Email)
-
+	warga, err := models.GetWargaByEmail(c, w.Email)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
@@ -178,25 +189,25 @@ func LoginPengurus(c echo.Context) error {
 		})
 	}
 
-	passTrue := utils.CheckPassword(prt.Password, prt.Email, pengurus.Password)
-
-	if passTrue == false {
+	isValid := utils.CheckPassword(w.Password, w.Email, warga.Password)
+	if !isValid {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
-			Message: "Password Salah",
+			Message: "Password yang anda masukkan salah",
 		})
 	}
-
-	token, err := utils.GenerateToken(pengurus.Nama, pengurus.Email, pengurus.Id)
+	token, err := utils.GenerateTokenWarga(c, warga.Nama, warga.Email, warga.Id, warga.IdKeluarga, utils.JWTStandartClaims)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusCreated,
-		Data:    map[string]string{"token": token, "nama": pengurus.Nama, "email": pengurus.Email},
+
+	return utils.ResponseLogin(c, utils.JSONResponseLogin{
+		Code:    http.StatusOK,
+		Token:   token,
 		Message: "Berhasil",
 	})
+
 }

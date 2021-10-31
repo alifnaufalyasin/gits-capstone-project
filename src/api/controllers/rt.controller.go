@@ -37,7 +37,7 @@ func CreateRT(c echo.Context) error {
 	rt.CreatedAt = time.Now()
 
 	// Ini fungsi dari models buat create data ke database
-	Rt, err := models.CreateRT(rt)
+	Rt, err := models.CreateRT(c, rt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -46,15 +46,15 @@ func CreateRT(c echo.Context) error {
 	}
 
 	// Return datanya
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusCreated,
-		Data:    Rt,
-		Message: "Berhasil",
+	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
+		Code:     http.StatusCreated,
+		CreateRT: Rt,
+		Message:  "Berhasil",
 	})
 }
 
 func GetAllRT(c echo.Context) error {
-	allRT, err := models.GetAllRT()
+	allRT, err := models.GetAllRT(c)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -62,10 +62,42 @@ func GetAllRT(c echo.Context) error {
 		})
 	}
 
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusOK,
-		Data:    allRT,
-		Message: "Berhasil",
+	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
+		Code:     http.StatusOK,
+		GetAllRT: allRT,
+		Message:  "Berhasil",
+	})
+}
+
+func GetAllRTWithPengurus(c echo.Context) error {
+	allRT, err := models.GetAllRTWithPengurus(c)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
+		Code:     http.StatusOK,
+		GetAllRT: allRT,
+		Message:  "Berhasil",
+	})
+}
+
+func GetAllRTWithKeluarga(c echo.Context) error {
+	allRT, err := models.GetAllRTWithKeluarga(c)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+
+	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
+		Code:     http.StatusOK,
+		GetAllRT: allRT,
+		Message:  "Berhasil",
 	})
 }
 
@@ -78,17 +110,17 @@ func GetRTByID(c echo.Context) error {
 		})
 	}
 
-	rt, err := models.GetRTByID(id)
+	rt, err := models.GetRTByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseData(c, utils.JSONResponseData{
-		Code:    http.StatusOK,
-		Data:    rt,
-		Message: "Berhasil",
+	return utils.ResponseDataRT(c, utils.JSONResponseDataRT{
+		Code:      http.StatusOK,
+		GetRTByID: rt,
+		Message:   "Berhasil",
 	})
 }
 
@@ -110,7 +142,7 @@ func UpdateRTById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetRTByID(id)
+	_, err := models.GetRTByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -120,7 +152,7 @@ func UpdateRTById(c echo.Context) error {
 
 	rt.UpdatedAt = time.Now()
 
-	_, err = models.UpdateRTById(id, rt)
+	_, err = models.UpdateRTById(c, id, rt)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -142,7 +174,7 @@ func SoftDeleteRTById(c echo.Context) error {
 		})
 	}
 
-	_, err := models.GetRTByID(id)
+	_, err := models.GetRTByID(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
@@ -150,7 +182,7 @@ func SoftDeleteRTById(c echo.Context) error {
 		})
 	}
 
-	_, err = models.SoftDeleteRTById(id)
+	_, err = models.SoftDeleteRTById(c, id)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,

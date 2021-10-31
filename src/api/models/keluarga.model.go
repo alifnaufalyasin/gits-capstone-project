@@ -5,14 +5,16 @@ import (
 	"src/db"
 	"src/entity"
 
+	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
-func CreateKeluarga(k *entity.Keluarga) (entity.Keluarga, error) {
-	db := db.GetDB()
+func CreateKeluarga(c echo.Context, k *entity.Keluarga) (entity.Keluarga, error) {
+	db := db.GetDB(c)
 
 	err := db.Create(&k)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.Keluarga{}, err.Error
 	}
 	if err.RowsAffected == 0 {
@@ -22,9 +24,9 @@ func CreateKeluarga(k *entity.Keluarga) (entity.Keluarga, error) {
 	return *k, nil
 }
 
-func GetAllKeluarga(filter string) ([]entity.Keluarga, error) {
+func GetAllKeluarga(c echo.Context, filter string) ([]entity.Keluarga, error) {
 	var keluargas []entity.Keluarga
-	db := db.GetDB()
+	db := db.GetDB(c)
 	var err *gorm.DB
 	if filter != "" {
 		err = db.Where("nama = ?", filter).Find(&keluargas)
@@ -32,39 +34,60 @@ func GetAllKeluarga(filter string) ([]entity.Keluarga, error) {
 		err = db.Find(&keluargas)
 	}
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return keluargas, err.Error
 	}
 
 	return keluargas, nil
 }
 
-func GetKeluargaByID(id string) (entity.Keluarga, error) {
+func GetAllKeluargaWithWarga(c echo.Context, filter string) ([]entity.Keluarga, error) {
+	var keluargas []entity.Keluarga
+	db := db.GetDB(c)
+	var err *gorm.DB
+	if filter != "" {
+		err = db.Preload("Warga").Where("nama = ?", filter).Find(&keluargas)
+	} else {
+		err = db.Preload("Warga").Find(&keluargas)
+	}
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return keluargas, err.Error
+	}
+
+	return keluargas, nil
+}
+
+func GetKeluargaByID(c echo.Context, id string) (entity.Keluarga, error) {
 	var k entity.Keluarga
-	db := db.GetDB()
+	db := db.GetDB(c)
 
 	err := db.First(&k, "id = ?", id)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return entity.Keluarga{}, errors.New("id tidak ditemukan atau tidak valid")
 	}
 
 	return k, nil
 }
 
-func UpdateKeluargaById(id string, k *entity.Keluarga) (int64, error) {
-	db := db.GetDB()
+func UpdateKeluargaById(c echo.Context, id string, k *entity.Keluarga) (int64, error) {
+	db := db.GetDB(c)
 
 	err := db.Model(&entity.Keluarga{}).Where("id = ?", id).Updates(k)
 	if err.Error != nil {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 	return err.RowsAffected, nil
 }
 
-func SoftDeleteKeluargaById(id string) (int64, error) {
-	db := db.GetDB()
+func SoftDeleteKeluargaById(c echo.Context, id string) (int64, error) {
+	db := db.GetDB(c)
 
 	err := db.Where("id = ?", id).Delete(&entity.Keluarga{})
 	if err.Error != nil || err.RowsAffected == 0 {
+		c.Logger().Error(err)
 		return 0, err.Error
 	}
 
