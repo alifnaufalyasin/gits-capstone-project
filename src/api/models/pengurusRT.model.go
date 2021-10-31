@@ -72,10 +72,10 @@ func SoftDeletePengurusById(c echo.Context, id string) (int64, error) {
 	return err.RowsAffected, nil
 }
 
-func PengurusSearchEmail(email string) (entity.PengurusRT, error) {
+func PengurusSearchEmail(c echo.Context, email string) (entity.PengurusRT, error) {
 
 	var prt entity.PengurusRT
-	db := db.GetDB()
+	db := db.GetDB(c)
 
 	err := db.First(&prt, "email = ?", email)
 	if err.Error != nil {
