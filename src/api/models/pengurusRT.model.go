@@ -64,3 +64,15 @@ func SoftDeletePengurusById(id string) (int64, error) {
 	}
 	return err.RowsAffected, nil
 }
+
+func PengurusSearchEmail(email string) (entity.PengurusRT, error) {
+
+	var prt entity.PengurusRT
+	db := db.GetDB()
+
+	err := db.First(&prt, "email = ?", email)
+	if err.Error != nil {
+		return entity.PengurusRT{}, errors.New("email tidak ditemukan atau tidak valid")
+	}
+	return prt, nil
+}
