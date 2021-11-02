@@ -43,6 +43,7 @@ func CreateWarga(c echo.Context) error {
 
 	// Ini buat masukin isi dari created_at nya
 	w.CreatedAt = time.Now()
+	w.Password = utils.HashPassword(w.Password, w.Email)
 
 	// Ini fungsi dari models buat create data ke database
 	W, err := models.CreateWarga(c, w)
@@ -125,7 +126,9 @@ func UpdateWargaById(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-
+	if w.Password != "" {
+		w.Password = utils.HashPassword(w.Password, w.Email)
+	}
 	w.UpdatedAt = time.Now()
 
 	_, err = models.UpdateWargaById(c, id, w)

@@ -70,7 +70,7 @@ func GetAllKeluarga(c echo.Context) error {
 }
 
 func GetAllKeluargaWithWarga(c echo.Context) error {
-	allKeluarga, err := models.GetAllKeluargaWithWarga(c, c.QueryParam("nama"))
+	allKeluarga, err := models.GetAllKeluargaWithEntity(c, c.QueryParam("nama"), "Warga")
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
