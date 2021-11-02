@@ -6,8 +6,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func HashPassword(password, email string) string {
-	pass := []byte(fmt.Sprintf("%s:%s", password, email))
+func HashPassword(password, id string) string {
+	pass := []byte(fmt.Sprintf("%s:%s", password, id))
 
 	// Hashing the password with the default cost of 10
 	hashedPassword, err := bcrypt.GenerateFromPassword(pass, bcrypt.DefaultCost)
