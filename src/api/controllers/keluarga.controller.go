@@ -8,6 +8,7 @@ import (
 	"src/utils"
 	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/oklog/ulid/v2"
 )
@@ -87,11 +88,11 @@ func GetAllKeluargaWithWarga(c echo.Context) error {
 
 func GetKeluargaByID(c echo.Context) error {
 	id := c.Param("id")
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+
 	if id == "" {
-		return utils.ResponseError(c, utils.Error{
-			Code:    http.StatusBadRequest,
-			Message: "Id tidak valid",
-		})
+		id = claims.IdKeluarga
 	}
 
 	k, err := models.GetKeluargaByID(c, id)
@@ -101,11 +102,19 @@ func GetKeluargaByID(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
-	return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
-		Code:            http.StatusOK,
-		GetKeluargaByID: k,
-		Message:         "Berhasil",
-	})
+	if c.Param("id") == "" {
+		return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
+			Code:            http.StatusOK,
+			GetKeluargaSaya: k,
+			Message:         "Berhasil",
+		})
+	} else {
+		return utils.ResponseDataKeluarga(c, utils.JSONResponseDataKeluarga{
+			Code:            http.StatusOK,
+			GetKeluargaByID: k,
+			Message:         "Berhasil",
+		})
+	}
 }
 
 func UpdateKeluargaById(c echo.Context) error {
