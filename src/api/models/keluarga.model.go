@@ -95,6 +95,7 @@ func SoftDeleteKeluargaById(c echo.Context, id string) (int64, error) {
 	return err.RowsAffected, nil
 }
 
+
 func GetKeluargaByKode(c echo.Context, kode string) (entity.Keluarga, error) {
 	var k entity.Keluarga
 	db := db.GetDB(c)
