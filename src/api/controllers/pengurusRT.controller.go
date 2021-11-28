@@ -188,7 +188,7 @@ func LoginPengurus(c echo.Context) error {
 
 	if err := c.Bind(prt); err != nil {
 		c.Logger().Error(err)
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
@@ -197,7 +197,7 @@ func LoginPengurus(c echo.Context) error {
 	pengurus, err := models.PengurusSearchEmail(c, prt.Email)
 
 	if err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
@@ -206,7 +206,7 @@ func LoginPengurus(c echo.Context) error {
 	passTrue := utils.CheckPassword(prt.Password, pengurus.Id, pengurus.Password)
 
 	if !passTrue {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: "Password Salah",
 		})
@@ -214,7 +214,7 @@ func LoginPengurus(c echo.Context) error {
 
 	token, err := utils.GenerateTokenPengurus(c, pengurus.Nama, pengurus.Email, pengurus.Id, pengurus.IdRT, utils.JWTStandartClaims)
 	if err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
@@ -240,8 +240,9 @@ func loginPengurus(c echo.Context, pass string, prt *entity.PengurusRT) error {
 
 	token, err := utils.GenerateTokenPengurus(c, prt.Nama, prt.Email, prt.Id, prt.IdRT, utils.JWTStandartClaims)
 	if err != nil {
-		return utils.ResponseError(c, utils.Error{
+		return utils.ResponseErrorLogin(c, utils.ErrorLogin{
 			Code:    http.StatusBadRequest,
+			Token:   "",
 			Message: err.Error(),
 		})
 	}
