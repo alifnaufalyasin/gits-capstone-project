@@ -25,23 +25,26 @@ func CreateOrder(c echo.Context) error {
 
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdWarga == "" {
+
+	if claims.UserId == "" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
 
-	ord.IdWarga = claims.IdWarga
+	w, err := models.GetWargaByEmail(c, claims.Email)
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
 
-	// if claims.IdPembayaran == "" {
-	// 	return utils.ResponseError(c, utils.Error{
-	// 		Code:    http.StatusBadRequest,
-	// 		Message: "idPembayaran gaadaa",
-	// 	})
-	// }
+	ord.IdWarga = w.Id
 
-	ord.IdPembayaran = claims.IdPembayaran
+	// id pembayaran belum.
+	// ord.IdPembayaran =
 
 	if err := ord.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
@@ -51,7 +54,7 @@ func CreateOrder(c echo.Context) error {
 	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 	ord.CreatedAt = time.Now()
-	order, err := models.CreateOrder(c, ord)
+	Order, err := models.CreateOrder(c, ord)
 
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
@@ -61,8 +64,8 @@ func CreateOrder(c echo.Context) error {
 	}
 
 	return utils.ResponseDataOrder(c, utils.JSONResponseDataOrder{
-		Code:        http.StatusOK,
-		CreateOrder: order,
+		Code:        http.StatusCreated,
+		CreateOrder: Order,
 		Message:     "Berhasil",
 	})
 }
