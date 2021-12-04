@@ -55,6 +55,18 @@ func GetInformasiByID(c echo.Context, id string) (entity.Informasi, error) {
 	return p, nil
 }
 
+func GetAllInformasiByKategori(c echo.Context, id_rt, kategori string) ([]entity.Informasi, error) {
+	var informasi []entity.Informasi
+	var err *gorm.DB
+	db := db.GetDB(c)
+	err = db.Where("id_rt = ? AND kategori = ?", id_rt, kategori).Find(&informasi)
+	if err.Error != nil {
+		c.Logger().Error(err)
+		return informasi, err.Error
+	}
+	return informasi, nil
+}
+
 func UpdateInformasiById(c echo.Context, id string, informasi *entity.Informasi) (int64, error) {
 	db := db.GetDB(c)
 

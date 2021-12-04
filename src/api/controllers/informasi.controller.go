@@ -31,6 +31,7 @@ func CreateInformasi(c echo.Context) error {
 		})
 	}
 
+	p.CreatedBy = claims.Nama
 	if err := p.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
@@ -38,8 +39,6 @@ func CreateInformasi(c echo.Context) error {
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	p.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 	p.IdRT = claims.IdRT
-	p.CreatedBy = claims.Nama
-
 	p.CreatedAt = time.Now()
 
 	Informasi, err := models.CreateInformasi(c, p)
@@ -93,6 +92,54 @@ func GetInformasiByID(c echo.Context) error {
 	return utils.ResponseDataInformasi(c, utils.JSONResponseDataInformasi{
 		Code:             http.StatusOK,
 		GetInformasiByID: p,
+		Message:          "Berhasil",
+	})
+}
+
+func GetInfoTerkini(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdRT == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	p, err := models.GetAllInformasiByKategori(c,claims.IdRT,"Informasi")
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	return utils.ResponseDataInformasi(c, utils.JSONResponseDataInformasi{
+		Code:             http.StatusOK,
+		GetAllInformasi: p,
+		Message:          "Berhasil",
+	})
+}
+
+func GetKegiatanWarga(c echo.Context) error {
+	userData := c.Get("user").(*jwt.Token)
+	claims := userData.Claims.(*utils.JWTCustomClaims)
+	if claims.IdRT == "" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
+
+	p, err := models.GetAllInformasiByKategori(c,claims.IdRT,"Kegiatan")
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+	}
+	return utils.ResponseDataInformasi(c, utils.JSONResponseDataInformasi{
+		Code:             http.StatusOK,
+		GetAllInformasi: p,
 		Message:          "Berhasil",
 	})
 }
