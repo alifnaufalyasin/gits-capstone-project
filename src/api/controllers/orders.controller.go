@@ -15,16 +15,45 @@ import (
 
 func CreateOrder(c echo.Context) error {
 	ord := new(entity.Order)
+	item := new(entity.ItemOrder)
+	prod := new(entity.Produk)
 
-	if err := c.Bind(ord); err != nil {
+	if err := c.Bind(prod); err != nil {
+		c.Logger().Error(err)
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
 		})
 	}
 
+	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	// var p entity.Produk
+	// err := json.NewDecoder(c.Request().Body).Decode(&p)
+	// if err != nil {
+	// 	return utils.ResponseError(c, utils.Error{
+	// 		Code:    http.StatusBadRequest,
+	// 		Message: err.Error(),
+	// 	})
+	// }
+
+	produk, err := models.ProdukSearch(c, prod.Id)
+
+	if err != nil {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+	}
+
+	item.IdOrder = ord.Id
+	item.IdProduk = prod.Id
+	item.HargaTotal = produk.Harga * item.Jumlah
+	models.CreateItemOrder(c, item)
 
 	if claims.UserId == "" {
 		return utils.ResponseError(c, utils.Error{
@@ -40,16 +69,11 @@ func CreateOrder(c echo.Context) error {
 		})
 	}
 	ord.IdWarga = warga.Id
-
-	// id pembayaran belum.
-	// ord.IdPembayaran =
+	ord.Harga_total = item.HargaTotal
 
 	if err := ord.ValidateCreate(); err.Code > 0 {
 		return utils.ResponseError(c, err)
 	}
-
-	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	ord.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
 	ord.CreatedAt = time.Now()
 	Order, err := models.CreateOrder(c, ord)
