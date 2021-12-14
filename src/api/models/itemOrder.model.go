@@ -47,16 +47,3 @@ func GetItemOrderByID(c echo.Context, id string) ([]entity.ItemOrder, error) {
 	}
 	return item, nil
 }
-
-func ProdukSearch(c echo.Context, id string) (entity.Produk, error) {
-
-	var prt entity.Produk
-	db := db.GetDB(c)
-
-	err := db.First(&prt, "id = ?", id)
-	if err.Error != nil {
-		c.Logger().Error(err)
-		return entity.Produk{}, errors.New("id tidak ditemukan")
-	}
-	return prt, nil
-}
