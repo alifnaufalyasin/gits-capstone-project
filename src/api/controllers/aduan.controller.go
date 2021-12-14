@@ -23,8 +23,19 @@ func CreateAduan(c echo.Context) error {
 		})
 	}
 
+	if err := a.ValidateCreate(); err.Code > 0 {
+		return utils.ResponseError(c, err)
+	}
+
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
+
+	if claims.User != "warga" {
+		return utils.ResponseError(c, utils.Error{
+			Code:    http.StatusBadRequest,
+			Message: "Maaf anda tidak memiliki akses ini",
+		})
+	}
 
 	warga, err := models.GetWargaByEmail(c, claims.Email)
 	if err != nil {
@@ -33,6 +44,8 @@ func CreateAduan(c echo.Context) error {
 			Message: err.Error(),
 		})
 	}
+
+	a.IdRT = claims.IdRT
 
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
 	a.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
