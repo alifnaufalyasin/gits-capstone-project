@@ -14,9 +14,9 @@ import (
 )
 
 func CreateTagihan(c echo.Context) error {
-	s := new(entity.Tagihan)
+	t := new(entity.Tagihan)
 
-	if err := c.Bind(s); err != nil {
+	if err := c.Bind(t); err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: err.Error(),
@@ -24,28 +24,26 @@ func CreateTagihan(c echo.Context) error {
 	}
 	userData := c.Get("user").(*jwt.Token)
 	claims := userData.Claims.(*utils.JWTCustomClaims)
-	if claims.IdRT == "" {
+	if claims.IdRT == "" && claims.User != "pengurus" {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusBadRequest,
 			Message: "Maaf anda tidak memiliki akses ini",
 		})
 	}
 
-	s.IdKeluarga = claims.IdKeluarga
-
-	//ini aku comment karena method ValidateCreate() belum ada di entity
-	/*
-		if err := s.ValidateCreate(); err.Code > 0 {
-			return utils.ResponseError(c, err)
-		}
-	*/
+	t.IdKeluarga = claims.IdKeluarga
+	
+	if err := t.ValidateCreate(); err.Code > 0 {
+		return utils.ResponseError(c, err)
+	}
+	
 
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
-	s.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
+	t.Id = ulid.MustNew(ulid.Timestamp(time.Now()), entropy).String()
 
-	s.CreatedAt = time.Now()
+	t.CreatedAt = time.Now()
 
-	Tagihan, err := models.CreateTagihan(c, s)
+	Tagihan, err := models.CreateTagihan(c, t)
 	if err != nil {
 		return utils.ResponseError(c, utils.Error{
 			Code:    http.StatusInternalServerError,
