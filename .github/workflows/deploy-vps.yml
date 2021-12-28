@@ -18,7 +18,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
-          key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgKsjeN3BWb/aWGhiQv5glPtuDkCdN0xtNP8AeqwUaJDdDBEAYr34W/1TG7a3kRzo7MJ1weMS2LEx7R/eLhstgAb8QesgHrS/U2MFZuCNhoPHGjACOdZAVOrhza+RSWrSXDsnxtXgV8YZlRwlG0AJ38bg9J0rUTw01NXbO+LL4aDJe/1nTBAIUh7aFq4UL3L6dpi2KdaqZpWogexyVpbuI9bL8yzWCcwRrSvCOe6nR/OTFRnjAYu7u7BpoxJH4n+7cXLuzs2F8BbSy3NOyOus30WUAcSxlqpOdw1oJKonyQCje8KilzjIVp+Wy9DbiILE7fChssNXpp3diCGAKl3pj alifnaufalyasin@sma-rt
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
             cd ~/gits-smart
