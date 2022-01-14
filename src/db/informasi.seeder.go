@@ -74,5 +74,21 @@ func SeedInformasi(db *gorm.DB, listRT []string) []string {
 
 	db.Create(&data4)
 
+	// Data 5
+	entropy5 := ulid.Monotonic(rand.New(rand.NewSource(time.Now().UnixNano())), 0)
+	Id5 := ulid.MustNew(ulid.Timestamp(time.Now()), entropy5).String()
+	data5 := entity.Informasi{
+		Id:        Id5,
+		IdRT:      listRT[0],
+		Judul:     "Kebanjiran lagi",
+		Detail:    "RT 1 dan RT 2 kebanjiran lagi",
+		Gambar:    "Banjir Lagi_2022_01-02_00_11_57",
+		Kategori:  "Informasi",
+		Lokasi:    "RT 1 dan RT 2",
+		CreatedAt: time.Now(),
+	}
+
+	db.Create(&data5)
+
 	return []string{Id1, Id2}
 }
