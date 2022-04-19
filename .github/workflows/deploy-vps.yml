@@ -25,7 +25,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd ~/gits-smart
-            git pull origin master
+            cd ~/gits-capstone-project
+            git pull
             docker-compose pull
             docker-compose up -d
+            docker image prune -f
