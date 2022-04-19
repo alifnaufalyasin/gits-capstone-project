@@ -92,7 +92,7 @@ func Init(e *echo.Echo) *echo.Echo {
 	e = Keranjang(e, JWTconfig)
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello Worlds!!!")
+		return c.String(http.StatusOK, "Hello World!!!")
 	})
 
 	e.Logger.Info("routes terinisialisasi")
