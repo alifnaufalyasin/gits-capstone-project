@@ -5,7 +5,7 @@ services:
     # pull_policy: always
     container_name: smart-server
     ports:
-      - "2001:2001"
+      - "4132:4132"
     # links:
     #   - db
     # depends_on:
@@ -20,7 +20,7 @@ services:
       - DB_PASSWORD=postgres
       - DB_NAME=postgres
       - SECRET=gitscapstoneproject
-      - PORT=2001
+      - PORT=4132
       - RESET_TABLES=true
       - SEED_TABLES=true
       - EMAIL=design.aliven7@gmail.com
