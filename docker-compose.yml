@@ -12,7 +12,7 @@ services:
     #   db: 
     #     condition: service_healthy
     expose:
-      - "2001"
+      - "4132"
     environment:
       - DB_HOST=db
       - DB_PORT=5432
