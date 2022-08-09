@@ -3,6 +3,8 @@ services:
   app:
     image: alifnaufalyasin/gits-capstone-project:latest
     # pull_policy: always
+    networks:
+      - database
     container_name: smart-server
     ports:
       - "4132:4132"
@@ -14,7 +16,7 @@ services:
     expose:
       - "4132"
     environment:
-      - DB_HOST=db
+      - DB_HOST=postgresql
       - DB_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
@@ -27,6 +29,11 @@ services:
       - PASSWORD_EMAIL=jfhrxbvhepngnbsv
       - FIREBASE_API_KEY=AAAAPB7DZ3k:APA91bEdWRKIYHYVwxqHtW_fWxnX01kLZOMxGglwhDi4SN1XU8Uth9j05f6bXS-l-kVVPNjdSXxpX96EKEDALroaUd5yPKJNcp6B4cRVNPT8PiCE3oNLvRmG-iKN5DW-rKtsYGj8hWsi
     restart: "unless-stopped"
+
+networks:
+  database:
+    name: database
+    external: true
     
   # db:
   #   image: postgres:13.4-alpine
